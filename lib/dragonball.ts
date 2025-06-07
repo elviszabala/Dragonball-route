@@ -16,3 +16,11 @@ export async function GetCharacterById(id: number) {
   const data = await response.json();
   return data;
 }
+export async function GetAllDataPage(page: number) {
+  const response = await fetch(`https://dragonball-api.com/api/characters?page=${page}&limit=20`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const data = await response.json();
+  return data;
+}

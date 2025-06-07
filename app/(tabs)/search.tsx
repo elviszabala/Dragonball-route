@@ -1,11 +1,14 @@
 import { ActivityIndicator, StyleSheet, FlatList, Image,ScrollView, SafeAreaView,
-  StatusBar,} from 'react-native';
+  StatusBar,
+  Pressable} from 'react-native';
 import { useEffect, useState } from 'react';
 
 
 import { Characters, Item } from '../../interfaces/Characters';
 import { View, Text } from 'react-native';
-import { GetAllData } from '../../lib/dragonball';
+import { GetAllData, GetAllDataPage } from '../../lib/dragonball';
+import { useNavigation } from '@react-navigation/native';
+import { Link } from 'expo-router';
 
 
 
@@ -43,12 +46,12 @@ const ShowCard = ({ item }) => (
 /**
  * A horizontal carousel component that displays a list of shows.
  */
-const Carousel = ({ title, data }) => (
+const Carousel = ({  data }) => (
   <View style={styles.carouselSection}>
-    <Text style={styles.carouselTitle}>{title}</Text>
+    
     <FlatList
       data={data}
-      renderItem={({ item }) => <ShowCard item={item} />}
+      renderItem={({ item }) => <ShowCardD item={item} />}
       keyExtractor={item => item.id}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -83,19 +86,36 @@ const CarouselD = ({ title, data }) => (
   </View>
 );
 
+const ModalScreen = () => {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ color: '#fff' }}>Modal Screen</Text>
+    </View>
+  );
+};
+
 
 export default function TabOneScreen() {
 
 
   //const itemsArray = data?.items ? Object.values(data.items) : [];
     const [data, setData] = useState<Characters | null>(null);
+    const [data2, setData2] = useState<Characters | null>(null);
+
+  // Fetch data from the API when the component mounts
+  // This is where you would typically use a library like axios or fetch to get data from an API.
       useEffect(() => {
 
     GetAllData().then(response => { 
         setData(response);
         
       })
-   
+
+      // Fetching data for the second carousel
+      GetAllDataPage(2).then(response => {
+        setData2(response);
+      });
+
   }, []);
 
 
@@ -107,12 +127,21 @@ export default function TabOneScreen() {
             <Text style={styles.headerTitle}>Search</Text>
             {/* Icons for search, cast, and profile would go here */}
         </View>
-        <CarouselD title="DragonBall" data={data.items} />
+        <Link href="/modal" asChild>
+          <Pressable style={{ padding: 16, backgroundColor: '#6200ee', borderRadius: 4, margin: 16 }}>
+            <Text style={{ color: '#fff', textAlign: 'center' }}>Open Modal</Text>
+          </Pressable>
+        </Link>
+
+        <CarouselD title="DragonBall" data={data?.items} />
+
+        <Carousel data={data2?.items} />
         {/* <Carousel title="Trending Now" data={mockData.trending} />
-        
+
         <Carousel title="New Episodes" data={mockData.newEpisodes} /> */}
-        
+
         {/* You can add more carousels here */}
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -160,7 +189,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 225,
     borderRadius: 4,
-    backgroundColor: '#333', // Placeholder color
+    backgroundColor: '#333333', // Placeholder color
     resizeMode: 'contain',
   },
   cardTitle: {

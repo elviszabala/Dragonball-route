@@ -10,9 +10,12 @@ import {
   TextInput,
   Switch,
   Alert,
+  Pressable,
+  StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { Link } from 'expo-router';
+import * as Device from 'expo-device';
 // --- Mock Data: In a real app, this data would come from your authentication state ---
 const CURRENT_USER_DATA = {
   id: '3',
@@ -32,6 +35,7 @@ export default function config() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     CURRENT_USER_DATA.settings.notificationsEnabled
   );
+  const [editable, setEditable] = useState(false);
 
   const handleSaveChanges = () => {
     // In a real app, you would send this data to your backend API
@@ -56,6 +60,7 @@ export default function config() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* --- Profile Header --- */}
         <View style={styles.profileHeader}>
@@ -74,7 +79,8 @@ export default function config() {
               placeholder="Full Name"
               placeholderTextColor="#888"
               value={name}
-              onChangeText={setName}
+              //onChangeText={setName}
+              editable ={false}
             />
           </View>
           <View style={styles.fieldContainer}>
@@ -84,9 +90,23 @@ export default function config() {
               placeholder="Email Address"
               placeholderTextColor="#888"
               value={email}
-              onChangeText={setEmail}
+              //onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              editable={false}
+            />
+          </View>
+          <View style={styles.fieldContainer}>
+            <Ionicons name="logo-usd" style={styles.fieldIcon} />
+            <TextInput
+              style={styles.input}
+              //placeholder="Email Address"
+              placeholderTextColor="#888"
+              value={"300"}
+              //onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={false}
             />
           </View>
         </View>
@@ -105,6 +125,19 @@ export default function config() {
               value={notificationsEnabled}
             />
           </View>
+          <Link href="/membership" asChild>
+            <Pressable style={styles.settingRow}>
+              {({ pressed }) => (
+                <View style={styles.settingRowContent}>
+                  <Ionicons name="card-outline" style={styles.fieldIcon} />
+                  <Text style={[styles.settingLabel, { color: pressed ? '#f47521' : '#ffffff' }]}>
+                    View Membership Details
+                  </Text>
+                  <Ionicons name="chevron-forward" style={styles.fieldIcon} />
+                </View>
+              )}
+            </Pressable>
+          </Link>
           
            
         </View>
@@ -117,6 +150,14 @@ export default function config() {
          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
+
+        {/* Footer Section */}
+        <View style={{ height: 50, paddingTop: 4, paddingBottom: 6 }} >
+          <Text style={{ color: '#A9A9A9', textAlign: 'center' }}>
+            © 2023 Version 1.0.0 - {Device.deviceName} - {Device.osName} {Device.osVersion}
+            
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -136,6 +177,7 @@ const styles = StyleSheet.create({
   profileHeader: {
     alignItems: 'center',
     marginBottom: 30,
+    paddingTop: 20,
   },
   avatar: {
     width: 120,
@@ -190,6 +232,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#2a2a2a',
     borderRadius: 8,
     paddingVertical: 8,
+    //paddingBottom: 8,
+    marginBottom: 3,
+  },
+    settingRowContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   settingLabel: {
     flex: 1,
